@@ -26,3 +26,5 @@
    ```
 3. **Запустите калькулятор:**
    Просто найдите в папке файл `index.html` и дважды кликните по нему. Он откроется в любом вашем браузере.
+##QLTY
+[![Maintainability](https://qlty.sh/gh/cH1PandDal3/projects/HTML-Calculator-JS-CSS/maintainability.svg)](https://qlty.sh/gh/cH1PandDal3/projects/HTML-Calculator-JS-CSS)
