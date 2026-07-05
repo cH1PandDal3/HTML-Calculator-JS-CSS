@@ -29,7 +29,7 @@
 
    ## 🎬 Демонстрация работы проекта:
 
-   <img width="1920" height="1080" alt="2026-07-05-21-19-12" src="https://github.com/user-attachments/assets/b1228314-7e06-4100-844e-dddfd0c3f8c3" />
+  <img width="320" alt="2026-07-05-21-19-12" src="https://github.com/user-attachments/assets/b1228314-7e06-4100-844e-dddfd0c3f8c3" />
 
 ## QLTY
 
