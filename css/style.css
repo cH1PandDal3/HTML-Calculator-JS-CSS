@@ -1,0 +1,73 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+}
+.calculator {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 320px;
+    overflow: hidden;
+}
+.calculator__display {
+    background-color: #222;
+    color: #fff;
+    font-size: 3rem;
+    text-align: right;
+    padding: 20px 25px;
+    min-height: 80px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-weight: 300;
+}
+.calculator__keys {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 2px;
+    background-color: #999;
+    padding: 2px;
+}
+.calculator__keys button {
+    background-color: #e0e0e0;
+    border: none;
+    font-size: 1.8rem;
+    padding: 20px 0;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+    font-weight: 500;
+}
+.calculator__keys .key--zero {
+    grid-column: span 2;
+}
+.calculator__keys .key--operator,
+.calculator__keys .key--equal {
+    background-color: #f5923e;
+    color: #fff;
+}
+.calculator__keys .key--clear {
+    background-color: #d4d4d2;
+}
+
+/* Эффект наведения для всех кнопок */
+.calculator__keys button:hover {
+    opacity: 0.85;
+}
+.calculator__keys button:active,
+.calculator__keys .is-depressed {
+    filter: brightness(85%);
+    transform: scale(0.97);
+}
+.calculator__keys .is-depressed {
+    background-color: #fff;
+    color: #f5923e;
+    filter: none;
+}
