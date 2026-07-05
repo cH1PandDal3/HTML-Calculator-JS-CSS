@@ -6,7 +6,7 @@ const getKeyType = (key) => {
     const { action } = key.dataset;
     if (!action) return 'number';
     if (action === 'add' || action === 'subtract' || action === 'multiply' || action === 'divide') return 'operator';
-    return action; // 'decimal', 'clear', 'calculate'
+    return action;
 };
 
 const calculate = (n1, operator, n2) => {
@@ -16,6 +16,7 @@ const calculate = (n1, operator, n2) => {
     if (operator === 'subtract') return firstNum - secondNum;
     if (operator === 'multiply') return firstNum * secondNum;
     if (operator === 'divide') return firstNum / secondNum;
+    return 0;
 };
 
 const createResultString = (key, displayedNum, state) => {
@@ -23,84 +24,134 @@ const createResultString = (key, displayedNum, state) => {
     const keyContent = key.textContent;
     const { firstValue, modValue, operator, previousKeyType } = state;
 
-    if (keyType === 'number') {
-        return displayedNum === '0' || previousKeyType === 'operator' || previousKeyType === 'calculate'
-            ? keyContent
-            : displayedNum + keyContent;
+    switch (keyType) {
+        case 'number':
+            return handleNumberKey(displayedNum, previousKeyType, keyContent);
+        
+        case 'decimal':
+            return handleDecimalKey(displayedNum, previousKeyType);
+        
+        case 'operator':
+            return handleOperatorKey(firstValue, operator, previousKeyType, displayedNum);
+        
+        case 'clear':
+            return '0';
+        
+        case 'calculate':
+            return handleCalculateKey(firstValue, operator, modValue, previousKeyType, displayedNum);
+        
+        default:
+            return displayedNum;
     }
+};
 
-    if (keyType === 'decimal') {
-        if (!displayedNum.includes('.')) return displayedNum + '.';
-        if (previousKeyType === 'operator' || previousKeyType === 'calculate') return '0.';
+const handleNumberKey = (displayedNum, previousKeyType, keyContent) => {
+    const shouldReplace = displayedNum === '0' || 
+                         previousKeyType === 'operator' || 
+                         previousKeyType === 'calculate';
+    return shouldReplace ? keyContent : displayedNum + keyContent;
+};
+
+const handleDecimalKey = (displayedNum, previousKeyType) => {
+    if (!displayedNum.includes('.')) {
+        return displayedNum + '.';
+    }
+    if (previousKeyType === 'operator' || previousKeyType === 'calculate') {
+        return '0.';
+    }
+    return displayedNum;
+};
+
+const handleOperatorKey = (firstValue, operator, previousKeyType, displayedNum) => {
+    const canCalculate = firstValue && 
+                         operator && 
+                         previousKeyType !== 'operator' && 
+                         previousKeyType !== 'calculate';
+    
+    return canCalculate 
+        ? calculate(firstValue, operator, displayedNum)
+        : displayedNum;
+};
+
+const handleCalculateKey = (firstValue, operator, modValue, previousKeyType, displayedNum) => {
+    if (!firstValue) {
         return displayedNum;
     }
 
-    if (keyType === 'operator') {
-        return firstValue && operator && previousKeyType !== 'operator' && previousKeyType !== 'calculate'
-            ? calculate(firstValue, operator, displayedNum)
-            : displayedNum;
-    }
-
-    if (keyType === 'clear') return '0';
-
-    if (keyType === 'calculate') {
-        if (!firstValue) return displayedNum;
-
-        if (previousKeyType === 'calculate') {
-            return calculate(displayedNum, operator, modValue);
-        } else {
-            return calculate(firstValue, operator, displayedNum);
-        }
+    if (previousKeyType === 'calculate') {
+        return calculate(displayedNum, operator, modValue);
+    } else {
+        return calculate(firstValue, operator, displayedNum);
     }
 };
 
 const updateCalculatorState = (key, calculator, calculatedValue, displayedNum) => {
     const keyType = getKeyType(key);
-    const { firstValue, modValue, operator, previousKeyType } = calculator.dataset;
+    const dataset = calculator.dataset;
+    const { firstValue, modValue, operator, previousKeyType } = dataset;
 
-    calculator.dataset.previousKeyType = keyType;
+    dataset.previousKeyType = keyType;
 
-    if (keyType === 'operator') {
-        calculator.dataset.operator = key.dataset.action;
-        calculator.dataset.firstValue = firstValue && operator && previousKeyType !== 'operator' && previousKeyType !== 'calculate'
-            ? calculatedValue
-            : displayedNum;
+    switch (keyType) {
+        case 'operator':
+            updateOperatorState(key, dataset, firstValue, operator, previousKeyType, calculatedValue, displayedNum);
+            break;
+        
+        case 'clear':
+            updateClearState(key, dataset);
+            break;
+        
+        case 'calculate':
+            updateCalculateState(dataset, firstValue, modValue, previousKeyType, displayedNum);
+            break;
     }
+};
 
-    if (keyType === 'clear') {
-        if (key.textContent === 'AC') {
-            calculator.dataset.firstValue = '';
-            calculator.dataset.modValue = '';
-            calculator.dataset.operator = '';
-            calculator.dataset.previousKeyType = '';
-        } else {
-            key.textContent = 'AC';
-        }
-    }
+const updateOperatorState = (key, dataset, firstValue, operator, previousKeyType, calculatedValue, displayedNum) => {
+    dataset.operator = key.dataset.action;
+    
+    const shouldCalculate = firstValue && 
+                           operator && 
+                           previousKeyType !== 'operator' && 
+                           previousKeyType !== 'calculate';
+    
+    dataset.firstValue = shouldCalculate ? calculatedValue : displayedNum;
+};
 
-    if (keyType === 'calculate') {
-        calculator.dataset.modValue = firstValue && previousKeyType === 'calculate'
-            ? modValue
-            : displayedNum;
+const updateClearState = (key, dataset) => {
+    if (key.textContent === 'AC') {
+        dataset.firstValue = '';
+        dataset.modValue = '';
+        dataset.operator = '';
+        dataset.previousKeyType = '';
+    } else {
+        key.textContent = 'AC';
     }
+};
+
+const updateCalculateState = (dataset, firstValue, modValue, previousKeyType, displayedNum) => {
+    dataset.modValue = (firstValue && previousKeyType === 'calculate') 
+        ? modValue 
+        : displayedNum;
 };
 
 const updateVisualState = (key, calculator) => {
     const keyType = getKeyType(key);
+    const clearButton = calculator.querySelector('[data-action=clear]');
 
-    Array.from(key.parentNode.children).forEach(k => k.classList.remove('is-depressed'));
+    const allKeys = key.parentNode.children;
+    Array.from(allKeys).forEach(k => k.classList.remove('is-depressed'));
 
     if (keyType === 'operator') {
         key.classList.add('is-depressed');
     }
 
-    const clearButton = calculator.querySelector('[data-action=clear]');
-    if (keyType !== 'clear') {
+    if (keyType === 'clear') {
+        if (key.textContent !== 'AC') {
+            key.textContent = 'AC';
+        }
+    } else {
         clearButton.textContent = 'CE';
-    }
-
-    if (keyType === 'clear' && key.textContent !== 'AC') {
-        key.textContent = 'AC';
     }
 };
 
