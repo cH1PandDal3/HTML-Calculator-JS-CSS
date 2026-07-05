@@ -27,6 +27,10 @@
 3. **Запустите калькулятор:**
    Просто найдите в папке файл `index.html` и дважды кликните по нему. Он откроется в любом вашем браузере.
 
+   ## 🎬 Демонстрация работы проекта:
+
+   <img width="1920" height="1080" alt="2026-07-05-21-19-12" src="https://github.com/user-attachments/assets/b1228314-7e06-4100-844e-dddfd0c3f8c3" />
+
 ## QLTY
 
 [![Maintainability](https://qlty.sh/gh/cH1PandDal3/projects/HTML-Calculator-JS-CSS/maintainability.svg)](https://qlty.sh/gh/cH1PandDal3/projects/HTML-Calculator-JS-CSS)
